@@ -1,2 +1,3 @@
 # WorkControler
-App will notifies you about end of workday
+App will notify you about end of workday
+
