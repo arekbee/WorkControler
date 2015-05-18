@@ -25,27 +25,31 @@ let getWorkTime() =
 let getEndWork (startHour :DateTime) workTime = 
     startHour.AddHours(if workTime > 0.0 then workTime else getWorkTime())
 
-let printRemainingTime (r :TimeSpan) (e :DateTime) = 
-    printfn "It is %dh and %dm to %s ( end of the day )"   r.Hours r.Minutes (e.ToShortTimeString())
+let getWorkTimeElapsedStr  (c :DateTime) = 
+    DateTime.Now - c |> (fun x-> x.ToString(@"hh\:mm"))
+
+
+let printRemainingTime (r :TimeSpan) (e :DateTime) (startDate :DateTime) = 
+    printfn "It is %dh and %dm to %s ( end of the day ). Your work time is %s"   r.Hours r.Minutes (e.ToShortTimeString())  (getWorkTimeElapsedStr(startDate)) 
 
 let riseEndDay() =
     cprintfn ConsoleColor.Red "End of work for today. Go HOME !!!"
 
 let work  (s:DateTime) (e:DateTime) =
-    let rec loop (c :DateTime) ll =
+    let rec loop (c :DateTime) ll (startDate :DateTime)=
         let r = e - c
         match r with 
             | (var1)  when var1.TotalMinutes > 0.0  -> 
                 let mutable lastLogedTime = ll
                 if (var1.Minutes % 2 = 0 ) && (var1.Minutes <> lastLogedTime )  then
-                    printRemainingTime var1 e
+                    printRemainingTime var1 e startDate
                     lastLogedTime  <-  var1.Minutes
                 Thread.Sleep (1000)
-                loop (DateTime.Now) lastLogedTime
+                loop (DateTime.Now) lastLogedTime startDate
             | _ -> riseEndDay()
 
     //printRemainingTime (e-s) e
-    loop s  s.Minute       
+    loop s  s.Minute   s      
 
  
 
